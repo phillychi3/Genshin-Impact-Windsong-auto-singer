@@ -9,7 +9,7 @@ from mido import MidiFile
 import time
 import ctypes, sys
 
-
+downkey = []
 
 c3 = 48 #lower  
 c4 = 60
@@ -70,6 +70,7 @@ def is_admin():
         return False
 
 
+
 def main():
     print("我不知道我為甚麼不睡覺寫這東西")
     print("希望寫的出來")
@@ -78,17 +79,35 @@ def main():
     print(midi.length)
     print("將會在3秒鐘後開始演奏")
     time.sleep(3)
+    print( midi.tracks)
 
     for msg in midi.play():
+        
         if msg.type == "note_on" or msg.type == "note_off":
-            time.sleep(msg.time)
+            #time.sleep(msg.time)
             note = msg.note 
-            if msg.note < 48:
+            note-=12
+
+            if note < 48:
                 continue
-            if msg.note > 83:
+
+            if note > 83:
                 continue
             note = str(note)
-            pyautogui.press(str(idk[note]))
+            if msg.type == "note_on":
+                
+                print(note)
+                if str(idk[note]) in downkey:
+                    pyautogui.keyUp(str(idk[note]))
+                tt = time.time()
+                pyautogui.keyDown(str(idk[note]))
+                dt = time.time() - tt
+                print(dt)
+                downkey.append(str(idk[note]))
+            else:
+                pyautogui.keyUp(str(idk[note]))
+                downkey.remove(str(idk[note]))
+
                 
 
 if __name__ == '__main__':
